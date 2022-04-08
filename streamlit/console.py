@@ -6,7 +6,7 @@ import numpy as np
 @st.cache
 def convert_df(df):
      # IMPORTANT: Cache the conversion to prevent computation on every rerun
-     return df.to_csv().encode('utf-8')
+    return df.to_csv(sep=';',decimal=',').encode('utf-8')
 
 uploaded_files = st.file_uploader("Proszę wybrać pliki csv", accept_multiple_files=True)
 
@@ -28,7 +28,7 @@ if choose == 'Rozpłodowa':
 
         csv2 = convert_df(data3[0])
         st.download_button(
-            label="Download data as CSV",
+            label="Pobierz plik CSV",
             data=csv2,
             mime='text/csv',
             file_name='rozplodowa_rasa.csv',
@@ -37,7 +37,7 @@ if choose == 'Rozpłodowa':
         st.dataframe(data3[1])
         csv3 = convert_df(data3[1])
         st.download_button(
-            label="Download data as CSV",
+            label="Pobierz plik CSV",
             data=csv3,
             mime='text/csv',
             file_name='rozplodowa_rasa_region.csv',
@@ -46,7 +46,7 @@ if choose == 'Rozpłodowa':
         st.dataframe(data3[2])
         csv4 = convert_df(data3[2])
         st.download_button(
-            label="Download data as CSV",
+            label="Pobierz plik CSV",
             data=csv4,
             mime='text/csv',
             file_name='rozplodowa_krzyzowki.csv',
@@ -55,7 +55,7 @@ if choose == 'Rozpłodowa':
         st.dataframe(data3[3])
         csv5 = convert_df(data3[3])
         st.download_button(
-            label="Download data as CSV",
+            label="Pobierz plik CSV",
             data=csv5,
             mime='text/csv',
             file_name='rozplodowa_rasa_miot.csv',
@@ -81,7 +81,7 @@ elif choose == 'Przyżyciowa':
 
         csv1 = convert_df(data[0])
         st.download_button(
-            label="Download data as CSV",
+            label="Pobierz plik CSV",
             data=csv1,
             mime='text/csv',
             file_name='przyzyciowa_rasa_region.csv',
@@ -92,13 +92,20 @@ elif choose == 'Przyżyciowa':
 
         csv = convert_df(data[1])
         st.download_button(
-        label = "Download data as CSV",
+        label = "Pobierz plik CSV",
         data = csv,
         mime = 'text/csv',
         file_name = 'przyzyciowa_rasa.csv',
         )
+
     except:
         st.write("Brak załadowanych plików lub wprowadzonych danych")
+
+wyczysc = st.button("Zakończ")
+
+if wyczysc:
+    pz.delete()
+    st.write("Dziękuję dowidzenia :)")
 
 
 

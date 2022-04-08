@@ -1,6 +1,7 @@
 import pandas as pd
 import glob
 import numpy as np
+import os
 
 def concat_df(extension = 'csv'):
     empty_df = pd.DataFrame()
@@ -65,7 +66,7 @@ def prepare_df(DT, plec_osobnika = 1, rok = 2021):
 
 
     def createDT(race):
-        if plec_osobnika == 1:
+        if plec_osobnika == '1':
             temp = pd.DataFrame(columns=['Rasa', "Liczba Knurów", 'Wiek w dniu oceny', 'Masa ciała w dniu oceny (kg)',
                                          'Średnia grubość słoniny standar. (mm)',
                                          'Wysokość "oka" polędwicy standar. (mm)', 'Przyrost dzienny standar. (g)',
@@ -121,9 +122,9 @@ def prepare_df(DT, plec_osobnika = 1, rok = 2021):
             return temp
 
     def new_count(DT, DT2):
-        if plec_osobnika == 1:
+        if plec_osobnika == "1":
             DT2['Liczba Knurów'] = len(DT)
-        else:
+        elif plec_osobnika == "2":
             DT2["Liczba Loch"] = len(DT)
         DT2['Wiek w dniu oceny'] = DT['DNI'].mean()
         DT2['Wiek w dniu oceny'] = DT2['Wiek w dniu oceny'].round(decimals=0)
@@ -191,6 +192,9 @@ def prepare_df(DT, plec_osobnika = 1, rok = 2021):
         temp['Filia "POLSUS"'] = ["Wrocław", "Bydgoszcz", "Lublin", "Zielona Góra", "Łódź", "Kraków", "Warszawa",
                                   "Opole", "Rzeszów", "Białystok", "Gdańsk",
                                   "Katowice", "Kielce", "Olsztyn", "Poznań", "Koszalin"]
+        if plec_osobnika == '2':
+            temp.rename(columns= {"Liczba Knurów": "Liczba Loch"},inplace=True)
+
         temp = pd.DataFrame(temp).set_index('Filia "POLSUS"')
         return temp
 
@@ -226,7 +230,10 @@ def prepare_df(DT, plec_osobnika = 1, rok = 2021):
 
     def city_count(DT, PDT):
         for i, sub in PDT.groupby('KW'):
-            DT.loc[dic_miasta[i]]['Liczba Knurów'] = sub.KY1.agg(len)
+            if plec_osobnika =="1":
+                DT.loc[dic_miasta[i]]['Liczba Knurów'] = sub.KY1.agg(len)
+            elif plec_osobnika =="2":
+                DT.loc[dic_miasta[i]]['Liczba Loch'] = sub.KY1.agg(len)
             DT.loc[dic_miasta[i]]['Masa ciała w dniu oceny (kg)'] = sub.KY1.mean()
             DT.loc[dic_miasta[i]]['Wiek w dniu oceny'] = sub.DNI.mean()
             DT.loc[dic_miasta[i]]['Średnia grubość słoniny standar. (mm)'] = ((sub.KY3 + sub.KY5) / 2).mean()
@@ -244,6 +251,7 @@ def prepare_df(DT, plec_osobnika = 1, rok = 2021):
         DT['Procentowa zawartość mięsa standar.'] = DT['Procentowa zawartość mięsa standar.'].apply(round_float)
         DT['Przyrost dzienny standar. (g)'] = DT['Przyrost dzienny standar. (g)'].astype(int)
         DT['Indeks (pkt)'] = DT['Indeks (pkt)'].astype(int)
+
         return DT
 
     city_wbp = createDTCity()
@@ -291,6 +299,7 @@ def prepare_df(DT, plec_osobnika = 1, rok = 2021):
         [city_wbp, city_pbz, city_hamp, city_dur, city_piet, city_l990, city_zb, city_zps, city_pula, city_rest],
         keys=['Wbp', 'Pbz', 'Hampshire', 'Duroc', 'Pietrain', 'Linia 990', 'Złotnicka biała', 'Złotnicka pstra',
               'Puławska', 'Mieszańce'])
+
     last2.sort_index(inplace=True)
 
 
@@ -310,3 +319,7 @@ def df_to_file(df, file_name):
     df.to_csv(file_name, index = 'False')
 
     return empty_df.describe()
+
+def delete():
+    for file in glob.glob(f"*.csv"):
+        os.remove(file)

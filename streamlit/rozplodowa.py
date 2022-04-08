@@ -98,8 +98,8 @@ def prepare_df2(DFL,DFM,date_from = 2020-12-12 ,date_to = 2021-12-11):
 
     # Funkcja tworzy DF z określonymi już kolumnami
     def createDT(name):
-        temp = pd.DataFrame(columns=['Rasa', 'liczba loch', 'liczba ocenionych miotów ogółem',
-                                     'liczba ocenionych miotów pierw.', 'Liczba prosiąt urodzonych w miocie',
+        temp = pd.DataFrame(columns=['Rasa', 'Liczba loch', 'Liczba ocenionych miotów ogółem',
+                                     'Liczba ocenionych miotów pierw.', 'Liczba prosiąt urodzonych w miocie',
                                      'Liczba prosiąt w 21 dniu życia', 'Straty prosiąt do 21 dnia życia(%)',
                                      'Liczba sutków lochy',
                                      'Wiek w dniu pierwszego oprosienia(dni)', 'Okres miedzymiotu(dni)'], index=[1])
@@ -125,9 +125,9 @@ def prepare_df2(DFL,DFM,date_from = 2020-12-12 ,date_to = 2021-12-11):
     # Funkcja wylicza wszystkie niezbędne wartości i przypisuje je do DF
 
     def all_count(DT, new):
-        new['liczba loch'] = len(DT.drop_duplicates(subset='LPROS1', keep="first").copy())
-        new['liczba ocenionych miotów ogółem'] = len(DT)
-        new['liczba ocenionych miotów pierw.'] = len(DT[DT['NMIOT'] == 1])
+        new['Liczba loch'] = len(DT.drop_duplicates(subset='LPROS1', keep="first").copy())
+        new['Liczba ocenionych miotów ogółem'] = len(DT)
+        new['Liczba ocenionych miotów pierw.'] = len(DT[DT['NMIOT'] == 1])
         new['Liczba prosiąt urodzonych w miocie'] = np.around(DT['LIL11'].mean(), decimals=2)
         new['Liczba prosiąt w 21 dniu życia'] = np.around(DT['LIL21'].mean(), decimals=2)
         new['Straty prosiąt do 21 dnia życia(%)'] = np.around(DT['ST21'].mean(), decimals=2)
@@ -190,9 +190,10 @@ def prepare_df2(DFL,DFM,date_from = 2020-12-12 ,date_to = 2021-12-11):
     rasaDF.set_index('Rasa', inplace=True)
     rasaDF['Liczba sutków lochy'] = rasaDF['Liczba sutków lochy'].astype(str)
     rasaDF['Wiek w dniu pierwszego oprosienia(dni)'] = rasaDF['Wiek w dniu pierwszego oprosienia(dni)'].astype(str)
-    rasaDF['Liczba sutków lochy'].replace('nan','-',inplace=True)
-    rasaDF['Wiek w dniu pierwszego oprosienia(dni)'].replace('nan','-',inplace=True)
-
+    rasaDF['Liczba sutków lochy'].replace('nan','0',inplace=True)
+    rasaDF['Liczba sutków lochy'] = rasaDF['Liczba sutków lochy'].astype(float)
+    rasaDF['Wiek w dniu pierwszego oprosienia(dni)'].replace('nan','0',inplace=True)
+    rasaDF['Wiek w dniu pierwszego oprosienia(dni)'] = rasaDF['Wiek w dniu pierwszego oprosienia(dni)'].astype(float)
 
     # Rozplodowa rasa/region
 
@@ -221,8 +222,8 @@ def prepare_df2(DFL,DFM,date_from = 2020-12-12 ,date_to = 2021-12-11):
     race_list = [wbp, pbz, hamp, dur, piet, l99, zb, zps, pula]
 
     def create_cityDT(city, race):
-        temp = pd.DataFrame(columns=['Rasa', 'Miasto', 'liczba loch', 'liczba ocenionych miotów ogółem',
-                                     'liczba ocenionych miotów pierw.', 'Liczba prosiąt urodzonych w miocie',
+        temp = pd.DataFrame(columns=['Rasa', 'Miasto', 'Liczba loch', 'Liczba ocenionych miotów ogółem',
+                                     'Liczba ocenionych miotów pierw.', 'Liczba prosiąt urodzonych w miocie',
                                      'Liczba prosiąt w 21 dniu życia', 'Straty prosiąt do 21 dnia życia(%)',
                                      'Liczba sutków lochy',
                                      'Wiek w dniu pierwszego oprosienia(dni)', 'Okres miedzymiotu(dni)'], index=[1])
@@ -267,12 +268,13 @@ def prepare_df2(DFL,DFM,date_from = 2020-12-12 ,date_to = 2021-12-11):
     CompleteCityDF['Okres miedzymiotu(dni)'] = CompleteCityDF['Okres miedzymiotu(dni)'].astype(str)
     CompleteCityDF['Liczba sutków lochy'] = CompleteCityDF['Liczba sutków lochy'].astype(str)
     CompleteCityDF['Wiek w dniu pierwszego oprosienia(dni)'] = CompleteCityDF['Wiek w dniu pierwszego oprosienia(dni)'].astype(str)
-
-    CompleteCityDF['Okres miedzymiotu(dni)'].replace('nan','-',inplace=True)
-    CompleteCityDF['Liczba sutków lochy'].replace('nan','-',inplace=True)
-    CompleteCityDF['Wiek w dniu pierwszego oprosienia(dni)'].replace('nan','-',inplace=True)
+    CompleteCityDF['Okres miedzymiotu(dni)'].replace('nan','0',inplace=True)
+    CompleteCityDF['Liczba sutków lochy'].replace('nan','0',inplace=True)
+    CompleteCityDF['Wiek w dniu pierwszego oprosienia(dni)'].replace('nan','0',inplace=True)
+    CompleteCityDF['Okres miedzymiotu(dni)'] = CompleteCityDF['Okres miedzymiotu(dni)'].astype(float)
+    CompleteCityDF['Liczba sutków lochy'] = CompleteCityDF['Liczba sutków lochy'].astype(float)
+    CompleteCityDF['Wiek w dniu pierwszego oprosienia(dni)'] = CompleteCityDF['Wiek w dniu pierwszego oprosienia(dni)'].astype(float)
     CompleteCityDF = CompleteCityDF.set_index(['Rasa', 'Miasto']).sort_index(ascending=True).dropna()
-
 
     # Rozplodowa mieszańce
 
@@ -312,7 +314,6 @@ def prepare_df2(DFL,DFM,date_from = 2020-12-12 ,date_to = 2021-12-11):
                              DUROCxPIETRAIN, PIETRAINxPIETRAIN, PIETRAINxDUROC])
     krzyzowkiDF.set_index('Rasa', inplace=True)
 
-
     # Rozpłodowa rasa/miot
 
     race_dict = {
@@ -339,7 +340,8 @@ def prepare_df2(DFL,DFM,date_from = 2020-12-12 ,date_to = 2021-12-11):
 
     completeDF.set_index(['Rasa', 'Kolejny miot']).sort_values(by=['Rasa', 'Kolejny miot'])
     completeDF['Okres międzymiotu(dni)'] = completeDF['Okres międzymiotu(dni)'].astype(str)
-    completeDF['Okres międzymiotu(dni)'].replace('nan','-',inplace=True)
+    completeDF['Okres międzymiotu(dni)'].replace('nan','0',inplace=True)
+    completeDF['Okres międzymiotu(dni)'] = completeDF['Okres międzymiotu(dni)'].astype(float)
 
     return [rasaDF,CompleteCityDF,krzyzowkiDF,completeDF]
 
