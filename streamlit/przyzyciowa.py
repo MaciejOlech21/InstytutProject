@@ -150,6 +150,7 @@ def prepare_df(DT, plec_osobnika = 1, rok = 2021):
         DF = pd.concat([DF, tempDF2])
 
     DF.set_index("Rasa", inplace=True)
+    DF = DF.fillna("-").applymap(lambda x: str(x).replace(".", ","))
 
     WBP = createDT(wbp)
     new_count(wbp, WBP)
@@ -301,6 +302,7 @@ def prepare_df(DT, plec_osobnika = 1, rok = 2021):
               'Puławska', 'Mieszańce'])
 
     last2.sort_index(inplace=True)
+    last2 = last2.fillna("-").applymap(lambda x: str(x).replace(".", ","))
 
 
     return [last2,DF]

@@ -188,12 +188,7 @@ def prepare_df2(DFL,DFM,date_from = 2020-12-12 ,date_to = 2021-12-11):
     # Łącze wyniki ras w jeden DF i ustalam Rasę jako index
     rasaDF = pd.concat([WBP, PBZ, HAMP, DUR, PIET, L99, PULA, ZB, ZPS])
     rasaDF.set_index('Rasa', inplace=True)
-    rasaDF['Liczba sutków lochy'] = rasaDF['Liczba sutków lochy'].astype(str)
-    rasaDF['Wiek w dniu pierwszego oprosienia(dni)'] = rasaDF['Wiek w dniu pierwszego oprosienia(dni)'].astype(str)
-    rasaDF['Liczba sutków lochy'].replace('nan','0',inplace=True)
-    rasaDF['Liczba sutków lochy'] = rasaDF['Liczba sutków lochy'].astype(float)
-    rasaDF['Wiek w dniu pierwszego oprosienia(dni)'].replace('nan','0',inplace=True)
-    rasaDF['Wiek w dniu pierwszego oprosienia(dni)'] = rasaDF['Wiek w dniu pierwszego oprosienia(dni)'].astype(float)
+    rasaDF = rasaDF.fillna("-").applymap(lambda x: str(x).replace(".", ","))
 
     # Rozplodowa rasa/region
 
@@ -265,16 +260,8 @@ def prepare_df2(DFL,DFM,date_from = 2020-12-12 ,date_to = 2021-12-11):
             rdy = all_count(tempDF2, tempDF)
             CompleteCityDF = pd.concat([CompleteCityDF, rdy])
 
-    CompleteCityDF['Okres miedzymiotu(dni)'] = CompleteCityDF['Okres miedzymiotu(dni)'].astype(str)
-    CompleteCityDF['Liczba sutków lochy'] = CompleteCityDF['Liczba sutków lochy'].astype(str)
-    CompleteCityDF['Wiek w dniu pierwszego oprosienia(dni)'] = CompleteCityDF['Wiek w dniu pierwszego oprosienia(dni)'].astype(str)
-    CompleteCityDF['Okres miedzymiotu(dni)'].replace('nan','0',inplace=True)
-    CompleteCityDF['Liczba sutków lochy'].replace('nan','0',inplace=True)
-    CompleteCityDF['Wiek w dniu pierwszego oprosienia(dni)'].replace('nan','0',inplace=True)
-    CompleteCityDF['Okres miedzymiotu(dni)'] = CompleteCityDF['Okres miedzymiotu(dni)'].astype(float)
-    CompleteCityDF['Liczba sutków lochy'] = CompleteCityDF['Liczba sutków lochy'].astype(float)
-    CompleteCityDF['Wiek w dniu pierwszego oprosienia(dni)'] = CompleteCityDF['Wiek w dniu pierwszego oprosienia(dni)'].astype(float)
     CompleteCityDF = CompleteCityDF.set_index(['Rasa', 'Miasto']).sort_index(ascending=True).dropna()
+    CompleteCityDF = CompleteCityDF.fillna("-").applymap(lambda x: str(x).replace(".", ","))
 
     # Rozplodowa mieszańce
 
@@ -313,6 +300,7 @@ def prepare_df2(DFL,DFM,date_from = 2020-12-12 ,date_to = 2021-12-11):
     krzyzowkiDF = pd.concat([WBPxWBP, WBPxPBZ, PBZxPBZ, PBZxWBP, DUROCxDUROC,
                              DUROCxPIETRAIN, PIETRAINxPIETRAIN, PIETRAINxDUROC])
     krzyzowkiDF.set_index('Rasa', inplace=True)
+    krzyzowkiDF = krzyzowkiDF.fillna("-").applymap(lambda x: str(x).replace(".", ","))
 
     # Rozpłodowa rasa/miot
 
@@ -338,10 +326,9 @@ def prepare_df2(DFL,DFM,date_from = 2020-12-12 ,date_to = 2021-12-11):
             rdy = all_count2(bDF, aDF, race)
             completeDF = pd.concat([completeDF, rdy])
 
-    completeDF.set_index(['Rasa', 'Kolejny miot']).sort_values(by=['Rasa', 'Kolejny miot'])
-    completeDF['Okres międzymiotu(dni)'] = completeDF['Okres międzymiotu(dni)'].astype(str)
-    completeDF['Okres międzymiotu(dni)'].replace('nan','0',inplace=True)
-    completeDF['Okres międzymiotu(dni)'] = completeDF['Okres międzymiotu(dni)'].astype(float)
+    completeDF.set_index(['Rasa', 'Kolejny miot'],inplace=True)
+    completeDF.sort_values(by=['Rasa', 'Kolejny miot'],inplace=True)
+    completeDF = completeDF.fillna("-").applymap(lambda x: str(x).replace(".", ","))
 
     return [rasaDF,CompleteCityDF,krzyzowkiDF,completeDF]
 
